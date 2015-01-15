@@ -5,13 +5,6 @@ fs = 256e3;
 
 %%
 % filter channel data
-order = 50;
-fc = 80e3 - 3.16;
-width = 10e3;
-fcol = fc - width;
-fcoh = fc + width;
-filter = fir1(order, [2*fcol/fs, 2*fcoh/fs]);
-real_am = conv(real_am_data, filter, 'valid');
 
 order = 50;
 fc = 40.0039e3;
@@ -21,13 +14,20 @@ fcoh = fc + width;
 filter = fir1(order, [2*fcol/fs, 2*fcoh/fs]);
 real_am_1 = conv(real_am_data, filter, 'valid');
 
+order = 50;
+fc = 80e3 - 3.16;
+width = 10e3;
+fcol = fc - width;
+fcoh = fc + width;
+filter = fir1(order, [2*fcol/fs, 2*fcoh/fs]);
+real_am = conv(real_am_data, filter, 'valid');
 
 %%
 % take clips from am and do AMR
 Ns = 4096*2; %desired no of samples
 ts = 0:1/fs:(Ns-1)/fs; %timebase at desired sampling rate
 
-clips = 50;
+clips = 200;
 P_real_am = zeros(1,clips);
 sigma_dp_real_am = zeros(1,clips);
 gamma_max_real_am = zeros(1,clips);
@@ -52,12 +52,6 @@ fs = 256e3;
 
 %%
 % filter
-order = 50;
-fc = 80e3 - 3.16;
-width = 10e3;
-fcol = fc - width;
-fcoh = fc + width;
-filter = fir1(order, [2*fcol/fs, 2*fcoh/fs]);
 real_fm = conv(real_fm_data, filter, 'valid');
 
 %% 
@@ -98,7 +92,10 @@ for i = 1:clips
 
     %AM and FM signal generation
     s_am = (1+x).*cos(2*pi*f_c.*ts) + 0.5*normrnd(1,1,1,Ns);
+    s_am = conv(s_am,filter,'same');
+    
     s_fm = cos(2*pi*f_c.*ts + cumsum(x)) + 0.5*normrnd(1,1,1,Ns);
+    s_fm = conv(s_fm, filter, 'same');
     
     [P_am(i), sigma_dp_am(i), gamma_max_am(i)] = AMRA(s_am, ts, fs);
     [P_fm(i), sigma_dp_fm(i), gamma_max_fm(i)] = AMRA(s_fm, ts, fs);
@@ -111,14 +108,8 @@ P_n = zeros(1,clips);
 sigma_dp_n = zeros(1,clips);
 gamma_max_n = zeros(1,clips);
 
-order = 50;
-fc = 80e3 - 3.16;
-width = 10e3;
-fcol = fc - width;
-fcoh = fc + width;
-filter = fir1(order, [2*fcol/fs, 2*fcoh/fs]);
-for i = 1:clips*10
-   noise = conv(normrnd(100,100,1,Ns+length(filter)-1),filter,'valid');
+for i = 1:clips
+   noise = conv(normrnd(1,1,1,Ns+length(filter)-1),filter,'valid');
    [P_n(i), sigma_dp_n(i), gamma_max_n(i)] = AMRA(noise,ts,fs);
 end
 
@@ -137,7 +128,7 @@ scatter3(gamma_max_real_fm, P_real_fm, sigma_dp_real_fm, dot_size, [1,1,0], 'fil
 scatter3(gamma_max_n, P_n, sigma_dp_n, dot_size, [0,1,1], 'fill');
 hold off;
 
-% xlabel('\gamma_{max}');
-% ylabel('P');
-% zlabel('\sigma_{dp}');
+xlabel('\gamma_{max}');
+ylabel('P');
+zlabel('\sigma_{dp}');
 % legend('Music AM modulated with f_c = 80kHz, gaussian noise added', 'Music FM Modulated with f_c = 80kHz, gaussain noise added', 'Real AM, nice sound at f_c = 80kHz', 'Real AM terrible sound at f_c = 40kHz', 'Real FM', 'AWGN');
