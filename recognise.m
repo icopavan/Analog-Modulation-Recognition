@@ -128,7 +128,7 @@ scatter3(gamma_max_real_fm, P_real_fm, sigma_dp_real_fm, dot_size, [1,1,0], 'fil
 scatter3(gamma_max_n, P_n, sigma_dp_n, dot_size, [0,1,1], 'fill');
 hold off;
 
-xlabel('\gamma_{max}');
+xlabel('gamma_max');
 ylabel('P');
-zlabel('\sigma_{dp}');
-% legend('Music AM modulated with f_c = 80kHz, gaussian noise added', 'Music FM Modulated with f_c = 80kHz, gaussain noise added', 'Real AM, nice sound at f_c = 80kHz', 'Real AM terrible sound at f_c = 40kHz', 'Real FM', 'AWGN');
+zlabel('sigma_dp');
+legend('Music AM modulated with f_c = 80kHz, gaussian noise added', 'Music FM Modulated with f_c = 80kHz, gaussain noise added', 'Real AM, nice sound at f_c = 80kHz', 'Real AM terrible sound at f_c = 40kHz', 'Real FM', 'AWGN');
