@@ -27,7 +27,7 @@ real_am_1 = conv(real_am_data, filter, 'valid');
 Ns = 4096*2; %desired no of samples
 ts = 0:1/fs:(Ns-1)/fs; %timebase at desired sampling rate
 
-clips = 100;
+clips = 1000;
 P_real_am = zeros(1,clips);
 sigma_dp_real_am = zeros(1,clips);
 gamma_max_real_am = zeros(1,clips);
@@ -43,6 +43,34 @@ for i = 1:clips;
     
     [P_real_am(i), sigma_dp_real_am(i), gamma_max_real_am(i)] = AMRA(real_am_clip, ts, fs);
     [P_real_am_1(i), sigma_dp_real_am_1(i), gamma_max_real_am_1(i)] = AMRA(real_am_clip_1, ts, fs);
+end
+
+%%
+% read real fm data
+real_fm_data = read_float_binary('FM1027e5min80e3.bin')';
+fs = 256e3;
+
+%%
+% filter
+order = 50;
+fc = 80e3 - 3.16;
+width = 10e3;
+fcol = fc - width;
+fcoh = fc + width;
+filter = fir1(order, [2*fcol/fs, 2*fcoh/fs]);
+real_fm = conv(real_fm_data, filter, 'valid');
+
+%% 
+% take clips from FM and do AMR
+P_real_fm = zeros(1,clips);
+sigma_dp_real_fm = zeros(1,clips);
+gamma_max_real_fm = zeros(1,clips);
+for i = 1:clips;
+    si = floor((length(real_fm)-2*Ns)*rand()) + Ns;
+    sf = si + Ns-1;
+    real_fm_clip = real_fm(si:sf);
+    
+    [P_real_fm(i), sigma_dp_real_fm(i), gamma_max_real_fm(i)] = AMRA(real_fm_clip, ts, fs);
 end
 
 %%
@@ -86,9 +114,10 @@ scatter3(gamma_max_am, P_am, sigma_dp_am, dot_size, [1,0,0], 'fill');
 scatter3(gamma_max_fm, P_fm, sigma_dp_fm, dot_size, [0,0,1], 'fill');
 scatter3(gamma_max_real_am, P_real_am, sigma_dp_real_am, dot_size, [0,1,0], 'fill');
 scatter3(gamma_max_real_am_1, P_real_am_1, sigma_dp_real_am_1, dot_size, [1,0,1], 'fill');
+scatter3(gamma_max_real_fm, P_real_fm, sigma_dp_real_fm, dot_size, [1,1,0], 'fill');
 hold off;
 
 xlabel('\gamma_{max}');
 ylabel('P');
 zlabel('\sigma_{dp}');
-legend('Music AM modulated with f_c = 80kHz, gaussian noise added', 'Music FM Modulated with f_c = 80kHz, gaussain noise added', 'Real AM, nice sound at f_c = 80kHz', 'Real AM terrible sound at f_c = 40kHz');
+legend('Music AM modulated with f_c = 80kHz, gaussian noise added', 'Music FM Modulated with f_c = 80kHz, gaussain noise added', 'Real AM, nice sound at f_c = 80kHz', 'Real AM terrible sound at f_c = 40kHz', 'Real FM');
