@@ -27,7 +27,7 @@ real_am_1 = conv(real_am_data, filter, 'valid');
 Ns = 4096*2; %desired no of samples
 ts = 0:1/fs:(Ns-1)/fs; %timebase at desired sampling rate
 
-clips = 1000;
+clips = 50;
 P_real_am = zeros(1,clips);
 sigma_dp_real_am = zeros(1,clips);
 gamma_max_real_am = zeros(1,clips);
@@ -105,6 +105,25 @@ for i = 1:clips
 end
 
 %%
+% just AWGN, no signal
+
+P_n = zeros(1,clips);
+sigma_dp_n = zeros(1,clips);
+gamma_max_n = zeros(1,clips);
+
+order = 50;
+fc = 80e3 - 3.16;
+width = 10e3;
+fcol = fc - width;
+fcoh = fc + width;
+filter = fir1(order, [2*fcol/fs, 2*fcoh/fs]);
+for i = 1:clips*10
+   noise = conv(normrnd(100,100,1,Ns+length(filter)-1),filter,'valid');
+   [P_n(i), sigma_dp_n(i), gamma_max_n(i)] = AMRA(noise,ts,fs);
+end
+
+
+%%
 % plot
 figure;
 hold on
@@ -115,9 +134,10 @@ scatter3(gamma_max_fm, P_fm, sigma_dp_fm, dot_size, [0,0,1], 'fill');
 scatter3(gamma_max_real_am, P_real_am, sigma_dp_real_am, dot_size, [0,1,0], 'fill');
 scatter3(gamma_max_real_am_1, P_real_am_1, sigma_dp_real_am_1, dot_size, [1,0,1], 'fill');
 scatter3(gamma_max_real_fm, P_real_fm, sigma_dp_real_fm, dot_size, [1,1,0], 'fill');
+scatter3(gamma_max_n, P_n, sigma_dp_n, dot_size, [0,1,1], 'fill');
 hold off;
 
-xlabel('\gamma_{max}');
-ylabel('P');
-zlabel('\sigma_{dp}');
-legend('Music AM modulated with f_c = 80kHz, gaussian noise added', 'Music FM Modulated with f_c = 80kHz, gaussain noise added', 'Real AM, nice sound at f_c = 80kHz', 'Real AM terrible sound at f_c = 40kHz', 'Real FM');
+% xlabel('\gamma_{max}');
+% ylabel('P');
+% zlabel('\sigma_{dp}');
+% legend('Music AM modulated with f_c = 80kHz, gaussian noise added', 'Music FM Modulated with f_c = 80kHz, gaussain noise added', 'Real AM, nice sound at f_c = 80kHz', 'Real AM terrible sound at f_c = 40kHz', 'Real FM', 'AWGN');
