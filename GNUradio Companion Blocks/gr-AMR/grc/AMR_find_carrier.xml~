@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<block>
+  <name>Find Carrier</name>
+  <key>AMR_find_carrier</key>
+  <category>AMR</category>
+  <import>import AMR</import>
+  <make>AMR.find_carrier($vlen, $samp_rate)</make>
+
+  <param>
+    <name>Vector Length</name>
+    <key>vlen</key>
+    <type>int</type>
+  </param>
+
+  <param>
+    <name>Sample Rate</name>
+    <key>samp_rate</key>
+    <type>int</type>
+  </param>
+
+  <sink>
+    <name>in</name>
+    <type>float</type>
+    <vlen>$vlen</vlen>
+  </sink>
+
+  <source>
+    <name>fc</name>
+    <type>float</type>
+  </source>
+
+  <source>
+    <name>Nc</name>
+    <type>float</type>
+  </source>
+
+  <source>
+    <name>gamma_max</name>
+    <type>float</type>
+  </source>
+</block>

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<block>
+  <name>remove_linear_phase_ff</name>
+  <key>AMR_remove_linear_phase_ff</key>
+  <category>AMR</category>
+  <import>import AMR</import>
+  <make>AMR.remove_linear_phase_ff()</make>
+
+  <!-- Make one 'sink' node per input. Sub-nodes:
+       * name (an identifier for the GUI)
+       * type
+       * vlen
+       * optional (set to 1 for optional inputs) -->
+  <sink>
+    <name>in</name>
+    <type>float</type>
+    <vlen>1024</vlen>
+  </sink>
+
+  <sink>
+    <name>freq</name>
+    <type>float</type>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>float</type>
+  </source>
+</block>

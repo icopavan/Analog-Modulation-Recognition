@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<block>
+  <name>Find P</name>
+  <key>AMR_find_P</key>
+  <category>AMR</category>
+  <import>import AMR</import>
+  <make>AMR.find_P($vlen)</make>
+
+  <param>
+    <name>Vec Length</name>
+    <key>vlen</key>
+    <type>int</type>
+  </param>
+
+
+  <sink>
+    <name>fft_in</name>
+    <type>float</type>
+    <vlen>$vlen</vlen>
+  </sink>
+
+  <sink>
+    <name>Nc_in</name>
+    <type>float</type>
+  </sink>
+
+  <source>
+    <name>P</name>
+    <type>float</type>
+    <vlen>$vlen</vlen>
+  </source>
+</block>

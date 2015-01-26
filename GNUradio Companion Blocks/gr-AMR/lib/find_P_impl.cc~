@@ -1,0 +1,88 @@
+/* -*- c++ -*- */
+/* 
+ * Copyright 2015 Jaccques Visser.
+ * 
+ * This is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3, or (at your option)
+ * any later version.
+ * 
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this software; see the file COPYING.  If not, write to
+ * the Free Software Foundation, Inc., 51 Franklin Street,
+ * Boston, MA 02110-1301, USA.
+ */
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include <gnuradio/io_signature.h>
+#include "find_P_impl.h"
+
+namespace gr {
+  namespace AMR {
+
+    find_P::sptr
+    find_P::make(int vlen)
+    {
+      return gnuradio::get_initial_sptr
+        (new find_P_impl(vlen));
+    }
+
+    /*
+     * The private constructor
+     */
+    find_P_impl::find_P_impl(int vlen)
+      : gr::sync_block("find_P",
+              gr::io_signature::make2(2, 2, sizeof(float)*vlen, sizeof(float)),
+              gr::io_signature::make(1, 1, sizeof(float))),
+        p_vlen(vlen)
+    {
+        set_max_noutput_items(1);
+    }
+
+    /*
+     * Our virtual destructor.
+     */
+    find_P_impl::~find_P_impl()
+    {
+    }
+
+    int
+    find_P_impl::work(int noutput_items,
+			  gr_vector_const_void_star &input_items,
+			  gr_vector_void_star &output_items)
+    {
+        const float *fft_in = (const float *) input_items[0];
+        const float *Nc_in = (const float *) input_items[0];
+        float *P = (float *) output_items[0];
+
+        float P_l = 0; //power of the lower sideband
+        for (int i = 0; i < *Nc_in; i++)
+        {
+            P_l += abs(fft_in[i]);
+        }
+        P_l = P_l * P_l;
+
+        float P_u = 0; //power of the upper sideband (remember hermetian symmetry)
+        for (int i = *Nc_in + 1; i < (int) p_vlen/2; i++)
+        {
+            P_u += abs(ff_in[i]);
+        }
+        P_u = P_u * P_u;
+
+        *P = (P_l - P_u)/(P_l + P_u); //a measure of the power symmetry about the carrier
+
+        // Tell runtime system how many output items we produced.
+        return noutput_items;
+    }
+
+  } /* namespace AMR */
+} /* namespace gr */
+

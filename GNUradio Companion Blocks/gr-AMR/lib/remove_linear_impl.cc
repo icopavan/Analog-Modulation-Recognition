@@ -1,0 +1,78 @@
+/* -*- c++ -*- */
+/* 
+ * Copyright 2015 <+YOU OR YOUR COMPANY+>.
+ * 
+ * This is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3, or (at your option)
+ * any later version.
+ * 
+ * This software is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this software; see the file COPYING.  If not, write to
+ * the Free Software Foundation, Inc., 51 Franklin Street,
+ * Boston, MA 02110-1301, USA.
+ */
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
+#include <gnuradio/io_signature.h>
+#include "remove_linear_impl.h"
+#define pi 3.1415926536
+
+namespace gr {
+  namespace AMR {
+
+    remove_linear::sptr
+    remove_linear::make(int vlen)
+    {
+      return gnuradio::get_initial_sptr
+        (new remove_linear_impl(vlen));
+    }
+
+    /*
+     * The private constructor
+     */
+    remove_linear_impl::remove_linear_impl(int vlen)
+      : gr::sync_block("remove_linear",
+              gr::io_signature::make2(2, 2, sizeof(float)*vlen, sizeof(int)),
+              gr::io_signature::make(1, 1, sizeof(float)*vlen)),
+        p_vlen(vlen)
+    {
+        set_max_noutput_items(1);
+    }
+
+    /*
+     * Our virtual destructor.
+     */
+    remove_linear_impl::~remove_linear_impl()
+    {
+    }
+
+    int
+    remove_linear_impl::work(int noutput_items,
+			  gr_vector_const_void_star &input_items,
+			  gr_vector_void_star &output_items)
+    {
+        const float *phase_in = (const float *) input_items[0];
+        const int *Nc_in = (const int *) input_items[1];
+        float *phase_out = (float *) output_items[0];
+
+        for (int i = 0; i < p_vlen; i++)
+        {
+            phase_out[i] = phase_in[i] - pi*(*Nc_in)*i/p_vlen;
+        }
+
+        // Tell runtime system how many output items we produced.
+        return noutput_items;
+    }
+
+  } /* namespace AMR */
+} /* namespace gr */
+

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<block>
+  <name>remove_neg_freq_cc</name>
+  <key>AMR_remove_neg_freq_cc</key>
+  <category>AMR</category>
+  <import>import AMR</import>
+  <make>AMR.remove_neg_freq_cc()</make>
+
+  <sink>
+    <name>in</name>
+    <type>complex</type>
+    <vlen>1024</vlen>
+  </sink>
+
+  <source>
+    <name>out</name>
+    <type>complex</type>
+    <vlen>1024</vlen>
+  </source>
+</block>
