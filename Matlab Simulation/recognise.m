@@ -27,7 +27,7 @@ real_am = conv(real_am_data, filter, 'valid');
 Ns = 4096*2; %desired no of samples
 ts = 0:1/fs:(Ns-1)/fs; %timebase at desired sampling rate
 
-clips = 200;
+clips = 50;
 P_real_am = zeros(1,clips);
 sigma_dp_real_am = zeros(1,clips);
 gamma_max_real_am = zeros(1,clips);
