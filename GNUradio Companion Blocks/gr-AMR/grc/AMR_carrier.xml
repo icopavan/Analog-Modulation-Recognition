@@ -11,7 +11,7 @@
        * key (makes the value accessible as $keyname, e.g. in the make node)
        * type -->
   <param>
-    <name>Vec Length</name>
+    <name>Vector Length</name>
     <key>vlen</key>
     <type>int</type>
   </param>
@@ -40,5 +40,6 @@
   <source>
     <name>gamma_max out</name>
     <type>float</type>
+    <vlen>$vlen</vlen>
   </source>
 </block>

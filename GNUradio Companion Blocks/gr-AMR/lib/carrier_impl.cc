@@ -41,7 +41,7 @@ namespace gr {
     carrier_impl::carrier_impl(int vlen)
       : gr::sync_block("carrier",
               gr::io_signature::make(1, 1, sizeof(float)*vlen),
-              gr::io_signature::make2(2, 2, sizeof(float), sizeof(int))),
+              gr::io_signature::make2(2, 2, sizeof(int), sizeof(float)*vlen)),
         p_vlen(vlen)
     {
         set_max_noutput_items(1);
@@ -74,7 +74,12 @@ namespace gr {
             }
         }
 
-        *gamma_max_out = max * max;
+        max = max * max;
+        for (int i = 0; i < p_vlen; i++)
+        {
+            gamma_max_out[i] = max;
+        }
+
         *Nc_out = Nc;
 
         // Tell runtime system how many output items we produced.
